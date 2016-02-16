@@ -22,17 +22,29 @@ var tranxLock;
 var tranyLock;
 var tranx = 0.0;
 var trany = 0.0;
-var redrawT1 = false;
-var redrawT2 = false;
 var program;
 var prevx = 0;
 var prevy = 0;
 
+var redrawT1 = false;
+var redrawT2 = false;
+var redrawT3 = false;
+var redrawT4 = false;
+var redrawT5 = false;
+var redrawS = false;
+var redrawTrap = false;
+
 var rotate = false;
 var rotateT1 = false;
-var thetaT1 = 0.0;
 var rotateT2 = false;
-var thetaT2 = 0.0;
+var rotateT3 = false;
+var rotateT4 = false;
+var rotateT5 = false;
+var rotateS = false;
+var rotateTrap = false;
+var theta = 0.0;
+var shift = false;
+
 
 window.onload = function init()
 {
@@ -54,36 +66,172 @@ window.onload = function init()
 		    redrawT2 = true;
 			if(rotate){rotateT2 = true;}
 	    }
+		if (inside([2*event.clientX/canvas.width - 1,1 - 2*event.clientY/canvas.height],triangleThree)){
+		    redrawT3 = true;
+			if(rotate){rotateT3 = true;}
+	    }
+		if (inside([2*event.clientX/canvas.width - 1,1 - 2*event.clientY/canvas.height],triangleFour)){
+		    redrawT4 = true;
+			if(rotate){rotateT4 = true;}
+	    }
+		if (inside([2*event.clientX/canvas.width - 1,1 - 2*event.clientY/canvas.height],triangleFive)){
+		    redrawT5 = true;
+			if(rotate){rotateT5 = true;}
+	    }
+		if (inside([2*event.clientX/canvas.width - 1,1 - 2*event.clientY/canvas.height],square)){
+		    redrawS = true;
+			if(rotate){rotateS = true;}
+	    }
+		if (inside([2*event.clientX/canvas.width - 1,1 - 2*event.clientY/canvas.height],trap)){
+		    redrawTrap = true;
+			if(rotate){rotateTrap = true;}
+	    }
+		
 		if(rotateT1){
-			var s = Math.sin( .05 );
-			var c = Math.cos( .05 );
+			var s = Math.sin( theta );
+			var c = Math.cos( theta );
 			for(var i = 1; i < triangleOne.length;i++){
 				var originx = triangleOne[0][0]; var originy = triangleOne[0][1];
 				triangleOne[i][0]-=originx;triangleOne[i][1]-=originy;
-				var x = -s * triangleOne[i][1] + c * triangleOne[i][0];
-				var y = s * triangleOne[i][0] + c * triangleOne[i][1];
+				if(shift){
+					var x = -s * triangleOne[i][1] + c * triangleOne[i][0];
+					var y = s * triangleOne[i][0] + c * triangleOne[i][1];					
+				}
+				else{
+					var x = s * triangleOne[i][1] + c * triangleOne[i][0];
+					var y = -s * triangleOne[i][0] + c * triangleOne[i][1];
+				}
 				triangleOne[i][0] = x + originx; triangleOne[i][1] = y + originy;
 			}
 			rotateT1 = false;
 		}
+		
 		if(rotateT2){
-			var s = Math.sin( .05 );
-			var c = Math.cos( .05 );
+			var s = Math.sin( theta );
+			var c = Math.cos( theta );
 			for(var i = 1; i < triangleTwo.length;i++){
 				var originx = triangleTwo[0][0]; var originy = triangleTwo[0][1];
 				triangleTwo[i][0]-=originx;triangleTwo[i][1]-=originy;
-				var x = -s * triangleTwo[i][1] + c * triangleTwo[i][0];
-				var y = s * triangleTwo[i][0] + c * triangleTwo[i][1];
+				if(shift){
+					var x = -s * triangleTwo[i][1] + c * triangleTwo[i][0];
+					var y = s * triangleTwo[i][0] + c * triangleTwo[i][1];					
+				}
+				else{
+					var x = s * triangleTwo[i][1] + c * triangleTwo[i][0];
+					var y = -s * triangleTwo[i][0] + c * triangleTwo[i][1];
+				}
 				triangleTwo[i][0] = x + originx; triangleTwo[i][1] = y + originy;
 			}
 			rotateT2 = false;
+			
+		}	
+		
+		if(rotateT3){
+			var s = Math.sin( theta );
+			var c = Math.cos( theta );
+			for(var i = 1; i < triangleThree.length;i++){
+				var originx = triangleThree[0][0]; var originy = triangleThree[0][1];
+				triangleThree[i][0]-=originx;triangleThree[i][1]-=originy;
+				if(shift){
+					var x = -s * triangleThree[i][1] + c * triangleThree[i][0];
+					var y = s * triangleThree[i][0] + c * triangleThree[i][1];					
+				}
+				else{
+					var x = s * triangleThree[i][1] + c * triangleThree[i][0];
+					var y = -s * triangleThree[i][0] + c * triangleThree[i][1];
+				}
+				triangleThree[i][0] = x + originx; triangleThree[i][1] = y + originy;
+			}
+			rotateT3 = false;
+			
 		}
-	  //console.log(2*event.clientX/canvas.width - 1);
+
+		if(rotateT4){
+			var s = Math.sin( theta );
+			var c = Math.cos( theta );
+			for(var i = 1; i < triangleFour.length;i++){
+				var originx = triangleFour[0][0]; var originy = triangleFour[0][1];
+				triangleFour[i][0]-=originx;triangleFour[i][1]-=originy;
+				if(shift){
+					var x = -s * triangleFour[i][1] + c * triangleFour[i][0];
+					var y = s * triangleFour[i][0] + c * triangleFour[i][1];					
+				}
+				else{
+					var x = s * triangleFour[i][1] + c * triangleFour[i][0];
+					var y = -s * triangleFour[i][0] + c * triangleFour[i][1];
+				}
+				triangleFour[i][0] = x + originx; triangleFour[i][1] = y + originy;
+			}
+			rotateT4 = false;
+			
+		}
+		if(rotateT5){
+			var s = Math.sin( theta );
+			var c = Math.cos( theta );
+			for(var i = 1; i < triangleFive.length;i++){
+				var originx = triangleFive[0][0]; var originy = triangleFive[0][1];
+				triangleFive[i][0]-=originx;triangleFive[i][1]-=originy;
+				if(shift){
+					var x = -s * triangleFive[i][1] + c * triangleFive[i][0];
+					var y = s * triangleFive[i][0] + c * triangleFive[i][1];					
+				}
+				else{
+					var x = s * triangleFive[i][1] + c * triangleFive[i][0];
+					var y = -s * triangleFive[i][0] + c * triangleFive[i][1];
+				}
+				triangleFive[i][0] = x + originx; triangleFive[i][1] = y + originy;
+			}
+			rotateT5 = false;
+			
+		}
+		if(rotateS){
+			var s = Math.sin( theta );
+			var c = Math.cos( theta );
+			for(var i = 1; i < square.length;i++){
+				var originx = square[0][0]; var originy = square[0][1];
+				square[i][0]-=originx;square[i][1]-=originy;
+				if(shift){
+					var x = -s * square[i][1] + c * square[i][0];
+					var y = s * square[i][0] + c * square[i][1];					
+				}
+				else{
+					var x = s * square[i][1] + c * square[i][0];
+					var y = -s * square[i][0] + c * square[i][1];
+				}
+				square[i][0] = x + originx; square[i][1] = y + originy;
+			}
+			rotateS = false;
+			
+		}
+		if(rotateTrap){
+			var s = Math.sin( theta );
+			var c = Math.cos( theta );
+			for(var i = 1; i < trap.length;i++){
+				var originx = trap[0][0]; var originy = trap[0][1];
+				trap[i][0]-=originx;trap[i][1]-=originy;
+				if(shift){
+					var x = -s * trap[i][1] + c * trap[i][0];
+					var y = s * trap[i][0] + c * trap[i][1];					
+				}
+				else{
+					var x = s * trap[i][1] + c * trap[i][0];
+					var y = -s * trap[i][0] + c * trap[i][1];
+				}
+				trap[i][0] = x + originx; trap[i][1] = y + originy;
+			}
+			rotateTrap = false;
+			
+		}
     });
 
     canvas.addEventListener("mouseup", function(event){
       redrawT1 = false;
 	  redrawT2 = false;
+	  redrawT3 = false;
+	  redrawT4 = false;
+	  redrawT5 = false;
+	  redrawS = false;
+	  redrawTrap = false;
     });
 	
 	canvas.addEventListener("mousemove", function(event){
@@ -99,6 +247,26 @@ window.onload = function init()
 			//console.log(inside([0,.5],triangleTwo));		
 			for(var i = 0; i < triangleTwo.length;i++){triangleTwo[i][0] += tranx; triangleTwo[i][1] += trany;}
 		}
+		if(redrawT3) {
+			//console.log(inside([0,.5],triangleTwo));		
+			for(var i = 0; i < triangleThree.length;i++){triangleThree[i][0] += tranx; triangleThree[i][1] += trany;}
+		}
+		if(redrawT4) {
+			//console.log(inside([0,.5],triangleTwo));		
+			for(var i = 0; i < triangleFour.length;i++){triangleFour[i][0] += tranx; triangleFour[i][1] += trany;}
+		}
+		if(redrawT5) {
+			//console.log(inside([0,.5],triangleTwo));		
+			for(var i = 0; i < triangleFive.length;i++){triangleFive[i][0] += tranx; triangleFive[i][1] += trany;}
+		}
+		if(redrawS) {
+			//console.log(inside([0,.5],triangleTwo));		
+			for(var i = 0; i < square.length;i++){square[i][0] += tranx; square[i][1] += trany;}
+		}
+		if(redrawTrap) {
+			//console.log(inside([0,.5],triangleTwo));		
+			for(var i = 0; i < trap.length;i++){trap[i][0] += tranx; trap[i][1] += trany;}
+		}
 		
 
     } );
@@ -106,8 +274,13 @@ window.onload = function init()
 		//console.log(event.keyCode);
 		switch(event.keyCode){
 			case 17:
-				
 				rotate = true;
+				theta = 0.0872665;
+				break;
+			case 16:
+				rotate = true;
+				theta = 0.0872665;
+				shift = true;
 				break;
 		}
 		
@@ -118,9 +291,14 @@ window.onload = function init()
 			case 17:
 				rotate = false;
 				break;
+			case 16:
+				rotate = false;
+				shift = false;
+				break;
 		}
 		
     });
+
 	
 	//
     //  Configure WebGL
@@ -167,13 +345,35 @@ function render() {
 function setUpTangram(){
 	
 	
-	triangleOne.push(vec2(-.5,.5),vec2(0,0));
-	triangleOne.push(vec2(-.5,-.5),vec2(0,0));
-	triangleOne.push(vec2(-.5,-.5),vec2(-.5,.5));
+	triangleOne.push(vec2(-.25,.25),vec2(0,0));
+	triangleOne.push(vec2(-.25,-.25),vec2(0,0));
+	triangleOne.push(vec2(-.25,-.25),vec2(-.25,.25));
 	
-	triangleTwo.push(vec2(-.5,.5),vec2(.5,.5));
-	triangleTwo.push(vec2(.5,.5),vec2(0,0));
-	triangleTwo.push(vec2(0,0),vec2(-.5,.5));	
+	triangleTwo.push(vec2(-.25,.25),vec2(.25,.25));
+	triangleTwo.push(vec2(.25,.25),vec2(0,0));
+	triangleTwo.push(vec2(0,0),vec2(-.25,.25));	
+	
+	triangleThree.push(vec2(.125,.125),vec2(.25,.25));
+	triangleThree.push(vec2(.25,.25),vec2(.25,0));
+	triangleThree.push(vec2(.25,0),vec2(.125,.125));
+	
+	triangleFour.push(vec2(.25,0),vec2(.25,-.25));
+	triangleFour.push(vec2(.25,-.25),vec2(0,-.25));
+	triangleFour.push(vec2(0,-.25),vec2(.25,0));
+	
+	triangleFive.push(vec2(0,0),vec2(.125,-.125));
+	triangleFive.push(vec2(.125,-.125),vec2(-.125,-.125));
+	triangleFive.push(vec2(-.125,-.125),vec2(0,0));
+	
+	square.push(vec2(0,0),vec2(.125,.125));
+	square.push(vec2(.125,.125),vec2(.25,0));
+	square.push(vec2(.25,0),vec2(.125,-.125));
+	square.push(vec2(.125,-.125),vec2(0,0));
+	
+	trap.push(vec2(-.25,-.25),vec2(-.125,-.125));
+	trap.push(vec2(-.125,-.125),vec2(.125,-.125));
+	trap.push(vec2(.125,-.125),vec2(0,-.25));
+	trap.push(vec2(0,-.25),vec2(-.25,-.25));
 
 	
 }
@@ -199,6 +399,11 @@ function renderAllShapes(){
 	
 	for(var i = 0; i < triangleOne.length;i++){allShapes.push(triangleOne[i]);}
 	for(var i = 0; i < triangleTwo.length;i++){allShapes.push(triangleTwo[i]);}
+	for(var i = 0; i < triangleThree.length;i++){allShapes.push(triangleThree[i]);}
+	for(var i = 0; i < triangleFour.length;i++){allShapes.push(triangleFour[i]);}
+	for(var i = 0; i < triangleFive.length;i++){allShapes.push(triangleFive[i]);}
+	for(var i = 0; i < square.length;i++){allShapes.push(square[i]);}
+	for(var i = 0; i < trap.length;i++){allShapes.push(trap[i]);}
 	
 	//console.log(inside([0,.5],triangleTwo));
 	size = allShapes.length;
