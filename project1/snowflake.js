@@ -3,10 +3,12 @@
 //Project 1
 //This program will generate a Koch snowflake
 
+
+//Set the points for the triangle below and set number of iterations
 var point1 = vec2(-.5,0);
 var point2 = vec2(0,.8655);
 var point3 = vec2(.5,0);
-var iterations = 4;
+var iterations = 2;
 var gl;
 var points = [];
 
@@ -16,21 +18,14 @@ window.onload = function init()
 
     gl = WebGLUtils.setupWebGL( canvas );
     if ( !gl ) { alert( "WebGL isn't available" ); }
-
-//Code will go here for snowflake//////////////////
-
-
-
+	
+//////////Calling the snowflake function///////////
     kochSnowflake(point1,point2,iterations);
 	kochSnowflake(point2,point3,iterations);
 	kochSnowflake(point3,point1,iterations);
-	//line(point1,point2);
-	//line(point2,point3);
-	//line(point3,point1);
-
-
 ///////////////////////////////////////////////////
 
+/////////////WebGL stuff here//////////////////////
 	//
     //  Configure WebGL
     //
@@ -56,6 +51,13 @@ window.onload = function init()
 
     render();
 };
+
+///////////Helper functions below///////////////////
+
+/* 
+	The functions below perform basic mathematical operations
+	on the vectors that are the points of the triangle
+*/
 function divide(point,number){
 	return vec2(point[0]/number, point[1]/number);
 }
@@ -82,11 +84,10 @@ function line( a, b)
     points.push(a, b);
 }
 
-//This function is designed to draw one curve of the snowflake	
+
+////////This function will draw one curve of the snowflake////////////
 function kochSnowflake(x, y, its)
 {
-	//document.write("##########");
-	//document.write(lineLength(x,y));
 	//We do not draw anything if iterations < 1
 	if(its < 1){return null;}
 	
@@ -96,13 +97,8 @@ function kochSnowflake(x, y, its)
 		return null;
 	}
 	
-	//The line will be broken down into 4 new lines
-	
-	//Get perpindicular slope
-	var slope = getSlope(x,y);
-	if(slope[0] == 0){slope = 0;}
-	else{ slope = 0-(slope[1]/slope[0]);}
-	
+	//////////The line will be broken down into 4 new lines//////////
+
 	//Get the point 1/3 of the way along the path of the line
 	var oneThird = divide(add(multiply(x,2),y),3);
 	
@@ -111,49 +107,19 @@ function kochSnowflake(x, y, its)
 	
 	//Now we need to calculate the midpoint
 	var midPoint = divide(add(x,y),2);
-		
-	var P4 = divide(sub(midPoint,x), lineLength(midPoint,x));
 	
+	//Calculate the new point now that we have the midpoint
+	var P4 = divide(sub(midPoint,x), lineLength(midPoint,x));
 	var P5 = vec2(P4[1], 0-P4[0]);
-	//document.write(midPoint);
-	//document.write("####");
 	var newPoint = add(multiply(P5,Math.sqrt(3)/6 * (0-lineLength(x,y))),midPoint);
 	
-	/*
-	//Pythagorean Theorem to find height of new triangle
-	var a = lineLength(twoThirds, midPoint);
-	var c = lineLength(x,oneThird);
-	var b = Math.sqrt(Math.pow(c,2) - Math.pow(a,2));
-	
-	var newX;
-	var newY;
-	var newPoint;
-	if (slope < 0){
-		newX = midPoint[0] - (b / (Math.sqrt(Math.pow(slope,2) + 1)));
-		newY = (slope * (newX - midPoint[0])) + midPoint[1]; 
-		newPoint = vec2(newX,newY);
-	}
-	if (slope > 0){
-		newX = midPoint[0] + (b / Math.sqrt(Math.pow(slope,2) + 1));
-		newY = (slope * (newX - midPoint[0])) + midPoint[1]; 
-		newPoint = vec2(newX,newY);
-	}
-	if(slope === 0){
-		newX = midPoint[0];
-		newY = midPoint[1] - b;
-		newPoint = vec2(newX,newY);	
-	}
-	//document.write("######");
-	//document.write(newY);
-	*/
-	
-	
+	//Recursive calls to draw the other curves of the snowflake
 	kochSnowflake(x,oneThird,its-1);
 	kochSnowflake(twoThirds,y,its-1);
 	kochSnowflake(oneThird,newPoint,its-1);
 	kochSnowflake(newPoint,twoThirds,its-1);
-	
 }
+
 
 function render() {
     gl.clear( gl.COLOR_BUFFER_BIT );
