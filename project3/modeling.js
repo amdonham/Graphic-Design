@@ -180,18 +180,46 @@ function bufferObjects(){
 }
 
 function addXColumn(x,y){
-	
+	var column =[	vec4( x+.01,     y,      0.54, 1.0 ),
+					vec4( x+.01,     y+.01, 0.54, 1.0 ),
+					vec4( x+.06,     y+.01, 0.54, 1.0 ),
+					vec4( x+.06,     y,      0.54, 1.0 ),
+					vec4( x+.01,     y,      0.5, 1.0 ),
+					vec4( x+.01,     y+.01, 0.5, 1.0 ),
+					vec4( x+.06,     y+.01, 0.5, 1.0 ),
+					vec4( x+.06,     y,      0.5, 1.0 )
+				];
+	textArray.push(column);
+	/*for(var i = 0;i < column.length;i++){
+		textArray.push(column[i]);
+	}*/
 }
 
+function addYColumnRotate(x,y,degrees){
+	var column =[	vec4( x,     y,    0.54, 1.0 ),
+					vec4( x,     y+.115, 0.54, 1.0 ),
+					vec4( x+.012, y+.115, 0.54, 1.0 ),
+					vec4( x+.012, y,    0.54, 1.0 ),
+					vec4( x,     y,    0.5, 1.0 ),
+					vec4( x,     y+.115, 0.5, 1.0 ),
+					vec4( x+.012, y+.115, 0.5, 1.0 ),
+					vec4( x+.012, y,    0.5, 1.0 )
+				];
+	column = rotateXZ(column,degrees);
+	textArray.push(column);
+	/*for(var i = 0;i < column.length;i++){
+		textArray.push(column[i]);
+	}*/
+}
 function addYColumn(x,y){
 	var column =[	vec4( x,     y,    0.54, 1.0 ),
 					vec4( x,     y+.1, 0.54, 1.0 ),
-					vec4( x+.02, y+.1, 0.54, 1.0 ),
-					vec4( x+.02, y,    0.54, 1.0 ),
+					vec4( x+.012, y+.1, 0.54, 1.0 ),
+					vec4( x+.012, y,    0.54, 1.0 ),
 					vec4( x,     y,    0.5, 1.0 ),
 					vec4( x,     y+.1, 0.5, 1.0 ),
-					vec4( x+.02, y+.1, 0.5, 1.0 ),
-					vec4( x+.02, y,    0.5, 1.0 )
+					vec4( x+.012, y+.1, 0.5, 1.0 ),
+					vec4( x+.012, y,    0.5, 1.0 )
 				];
 	textArray.push(column);
 	/*for(var i = 0;i < column.length;i++){
@@ -209,11 +237,91 @@ function drawText(){
 	//letter.push(vec2(xOffset,yOffset),vec2(xOffset,yOffset + .3));
 	//NumVertices+= 0;
 	//for(var i = 0; i < letter.length; i++){points.push(letter[i]);}*/
-	addYColumn(-.7,.55);
-	addYColumn(-.7,.67);
+	var position = -.72;
+	addLetter("k",position);
 		
 }
-function
+function addLetter(letter,position){
+	var distance = .06;
+	if(letter == 'a' || letter == "A"){
+		addYColumn(position,.55);
+		addYColumn(position,.67);
+		addYColumn(position + distance,.55);
+		addYColumn(position + distance,.67);
+		addXColumn(position, .65);
+		addXColumn(position, .77);
+	}
+	if(letter == 'b' || letter == "B"){
+		addYColumn(position+.0155,.55);
+		addYColumn(position+.0155,.67);
+		addYColumn(position + distance,.55);
+		addYColumn(position + distance,.67);
+		addXColumn(position, .54);
+		addXColumn(position+.01, .655);
+		addXColumn(position, .77);
+	}
+	if(letter == 'c' || letter == "C"){
+		addYColumn(position,.55);
+		addYColumn(position,.67);
+		addXColumn(position, .54);
+		addXColumn(position, .77);
+	}
+	if(letter == 'd' || letter == "D"){
+		addYColumn(position+.016,.55);
+		addYColumn(position+.016,.66);
+		addYColumn(position + distance,.55);
+		addYColumn(position + distance,.66);
+		addXColumn(position, .535);
+		addXColumn(position, .765);
+	}
+	if(letter == 'e' || letter == "E"){
+		addYColumn(position,.55);
+		addYColumn(position,.67);
+		addXColumn(position, .54);
+		addXColumn(position, .655);
+		addXColumn(position, .77);
+	}
+	if(letter == 'f' || letter == "F"){
+		addYColumn(position,.55);
+		addYColumn(position,.67);
+		addXColumn(position, .655);
+		addXColumn(position, .77);
+	}
+	if(letter == 'g' || letter == "G"){
+		addYColumn(position,.55);
+		addYColumn(position,.67);
+		addYColumn(position + distance +.007,.55);
+		addXColumn(position, .54);
+		addXColumn(position+.021, .655);
+		addXColumn(position+.01, .77);
+	}
+	if(letter == 'h' || letter == "H"){
+		addYColumn(position,.55);
+		addYColumn(position,.67);
+		addYColumn(position + distance,.55);
+		addYColumn(position + distance,.67);
+		addXColumn(position, .65);
+	}
+	if(letter == 'i' || letter == "I"){
+		addYColumn(position + distance/2,.55);
+		addYColumn(position + distance/2,.67);
+		addXColumn(position, .54);
+		addXColumn(position, .77);
+	}
+	if(letter == 'j' || letter == "J"){
+		addYColumn(position,.55);
+		addYColumn(position + distance,.55);
+		addYColumn(position + distance,.67);
+		addXColumn(position, .54);
+	}
+	if(letter == 'k' || letter == "K"){
+		addYColumn(position,.55);
+		addYColumn(position,.67);
+		addYColumnRotate(position+.02,.68,-45);
+		addYColumnRotate(position+.03,.64,-135);
+	}
+	
+}
 
 function setAllPoints(){
 	points = [];
@@ -352,6 +460,7 @@ function rotateYZ( object, degrees){
 		var y = s * object[i][1] + c * object[i][2];
 		object[i][1] = x; object[i][2] = y;
 	}
+	return object;
 }
 
 function rotateXY( object, degrees){
@@ -365,6 +474,21 @@ function rotateXY( object, degrees){
 		var y = s * object[i][0] + c * object[i][2];
 		object[i][0] = x; object[i][2] = y;
 	}
+	return object;
+}
+function rotateXZ( object, degrees){
+    var angles = radians( degrees );
+    var c = Math.cos( angles );
+    var s = Math.sin( angles );
+	
+	var originX = object[0][0]; var originY = object[0][1];
+	for(var i = 0; i < object.length; i++){
+		object[i][0] -= originX; object[i][1] -= originY;
+		var x = -s * object[i][1] + c * object[i][0];
+		var y = s * object[i][0] + c * object[i][1];
+		object[i][0] = x + originX; object[i][1] = y + originY;
+	}
+	return object;
 }
 
 function render()
