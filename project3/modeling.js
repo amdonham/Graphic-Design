@@ -228,17 +228,15 @@ function addYColumn(x,y){
 }
 
 function drawText(){
-	/*var word = "test";
+	var word = "abbkcabbkcEE";
 	word = word.split("");
 	console.log(word);
-	var xOffset = -.6;
-	var yOffset = .5;
-	var letter = [];
-	//letter.push(vec2(xOffset,yOffset),vec2(xOffset,yOffset + .3));
-	//NumVertices+= 0;
-	//for(var i = 0; i < letter.length; i++){points.push(letter[i]);}*/
 	var position = -.72;
-	addLetter("k",position);
+	for(var i = 0; i < word.length; i++){
+		addLetter(word[i],position);
+		position += .12
+	}
+	//addLetter("k",position);
 		
 }
 function addLetter(letter,position){
@@ -315,10 +313,10 @@ function addLetter(letter,position){
 		addXColumn(position, .54);
 	}
 	if(letter == 'k' || letter == "K"){
-		addYColumn(position,.55);
-		addYColumn(position,.67);
-		addYColumnRotate(position+.02,.68,-45);
-		addYColumnRotate(position+.03,.64,-135);
+		addYColumn(position,.54);
+		addYColumn(position,.68);
+		addYColumnRotate(position+.02,.675,-25);
+		addYColumnRotate(position+.03,.645,-155);
 	}
 	
 }
@@ -363,12 +361,8 @@ function setYColumn(col){
 }
 
 function setText(){
-	console.log(colors.length);
-	console.log(points.length);
 	for(var i = 0; i < textArray.length;i++){
 		setYColumn(textArray[i]);
-		console.log(colors.length);
-		console.log(points.length);
 	}
 	
 }
