@@ -1,3 +1,9 @@
+//Alan Donham
+//CS 435
+//Project 3
+//This program generates a 3d display of text that you can rotate
+
+
 "use strict";
 
 var canvas;
@@ -64,7 +70,7 @@ var base = [	vec4( -0.75, -0.9,  0.5, 1.0 ),
 				];
 
 var axis = 0;
-var theta = [ 0, 0, 0 ];
+var theta = [ -1, 7, 0 ];
 
 var thetaLoc;
 
@@ -512,9 +518,9 @@ function setBase(){
 	setBasePoints( 1, 0, 3, 2, 0 );
     setBasePoints( 2, 3, 7, 6, 1 );
     setBasePoints( 3, 0, 4, 7, 1 );
-    setBasePoints( 6, 5, 1, 2, 1 );
-    setBasePoints( 4, 5, 6, 7, 1 );
-    setBasePoints( 5, 4, 0, 1, 1 );
+    setBasePoints( 6, 5, 1, 2, 4 );
+    setBasePoints( 4, 5, 6, 7, 4 );
+    setBasePoints( 5, 4, 0, 1, 4 );
 	
 }
 
@@ -523,7 +529,7 @@ function setDisplay(){
     setDisplayPoints( 2, 3, 7, 6, 4 );
     setDisplayPoints( 3, 0, 4, 7, 1 );
     setDisplayPoints( 6, 5, 1, 2, 5 );
-    setDisplayPoints( 4, 5, 6, 7, 1 );
+    setDisplayPoints( 4, 5, 6, 7, 3 );
     setDisplayPoints( 5, 4, 0, 1, 4 );
 }
 
