@@ -5,13 +5,15 @@
 
 attribute  vec4 vPosition;
 attribute  vec4 vColor;
+attribute  vec4 par;
 varying vec4 fColor;
 
 uniform vec3 theta;
 
 void main()
 {
-    // Compute the sines and cosines of theta for each of
+    //par = ["test test",0]; 
+	// Compute the sines and cosines of theta for each of
     //   the three axes in one computation.
     vec3 angles = radians( theta );
     vec3 c = cos( angles );
@@ -66,4 +68,8 @@ Oops ... your browser doesn't support the HTML5 canvas element
 <br/>
 
 </body>
+
+<div id = "paragraph" style = "display:none">
+The device can display one word at a time in capital letters only. So any lower case letters shall be converted into the upper case ones, and any punctuation marks shall be dropped. Words shall be displayed automatically at certain speed, say, one word per second. It is assumed the longest word in the paragraph has a length of 12.
+</div>
 </html>

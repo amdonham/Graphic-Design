@@ -8,10 +8,14 @@ var NumVertices  = 108;
 var points = [];
 var colors = [];
 var textArray = [];
+var program;
 
+var wordIndex = 0;
+var paragraph;
+var frameCount = 1;
 var xAxis = 0;
-var yAxis = 1;
-var zAxis = 2;
+var yAxis = 0;
+var zAxis = 0;
 var rotateLeft = false;
 var rotateRight = false;
 var rotateUp = false;
@@ -70,11 +74,13 @@ window.onload = function init()
 
     gl = WebGLUtils.setupWebGL( canvas );
     if ( !gl ) { alert( "WebGL isn't available" ); }
-
 	setBase();
 	setDisplay();
 	setPost();
-	drawText();
+	paragraph = document.getElementById("paragraph").innerHTML;
+	paragraph = paragraph.split(" ");
+	
+	readPar();
 	setAllPoints();
 	handleRotation();
 
@@ -130,20 +136,24 @@ function handleRotation(){
 
 function drawObjects(){
 	if(rotateLeft){	
+		xAxis += 2;
 		rotateXY(display,2); 
 		rotateXY(post,2); 
 		for(var i = 0; i < textArray.length;i++){rotateXY(textArray[i],2);}
 		setAllPoints();}
-	if(rotateRight){rotateXY(
-		display,-2); 
+	if(rotateRight){
+		xAxis += -2;
+		rotateXY(display,-2); 
 		rotateXY(post,-2);
 		for(var i = 0; i < textArray.length;i++){rotateXY(textArray[i],-2);}
 		setAllPoints();}
 	if(rotateUp){
+		yAxis += -2;
 		rotateYZ(display,-2);
 		for(var i = 0; i < textArray.length;i++){rotateYZ(textArray[i],-2);}		
 		setAllPoints();}
 	if(rotateDown){	
+		yAxis+= 2;
 		rotateYZ(display, 2); 
 		for(var i = 0; i < textArray.length;i++){rotateYZ(textArray[i],2);}
 		setAllPoints();}
@@ -156,7 +166,7 @@ function bufferObjects(){
      //
     //  Load shaders and initialize attribute buffers
     //
-	var program = initShaders( gl, "vertex-shader", "fragment-shader" );
+	program = initShaders( gl, "vertex-shader", "fragment-shader" );
     gl.useProgram( program );
 
     var cBuffer = gl.createBuffer();
@@ -211,6 +221,7 @@ function addYColumnRotate(x,y,degrees){
 		textArray.push(column[i]);
 	}*/
 }
+
 function addYColumn(x,y){
 	var column =[	vec4( x,     y,    0.54, 1.0 ),
 					vec4( x,     y+.1, 0.54, 1.0 ),
@@ -227,10 +238,22 @@ function addYColumn(x,y){
 	}*/
 }
 
-function drawText(){
-	var word = "abbkcabbkcEE";
+function readPar(){
+	if(frameCount == 120){
+		textArray = [];
+		if(paragraph.length > wordIndex){
+			drawText(paragraph[wordIndex]);
+			for(var i = 0; i < textArray.length;i++){rotateXY(textArray[i],xAxis);}
+			for(var i = 0; i < textArray.length;i++){rotateYZ(textArray[i],yAxis);}
+			setAllPoints();
+			wordIndex += 1;
+			frameCount = 0;
+		}
+	}
+}
+
+function drawText(word){
 	word = word.split("");
-	console.log(word);
 	var position = -.72;
 	for(var i = 0; i < word.length; i++){
 		addLetter(word[i],position);
@@ -239,6 +262,7 @@ function drawText(){
 	//addLetter("k",position);
 		
 }
+
 function addLetter(letter,position){
 	var distance = .06;
 	if(letter == 'a' || letter == "A"){
@@ -318,7 +342,112 @@ function addLetter(letter,position){
 		addYColumnRotate(position+.02,.675,-25);
 		addYColumnRotate(position+.03,.645,-155);
 	}
-	
+	if(letter == 'l' || letter == "L"){
+		addYColumn(position,.55);
+		addYColumn(position,.67);
+		addXColumn(position, .54);
+	}
+	if(letter == 'm' || letter == "M"){
+		addYColumn(position,.55);
+		addYColumn(position,.67);
+		addYColumn(position + distance,.55);
+		addYColumn(position + distance,.67);
+		addYColumnRotate(position+distance/2,.645,10);
+		addYColumnRotate(position+distance/2,.645,-10);
+	}	
+	if(letter == 'n' || letter == "N"){
+		addYColumn(position,.55);
+		addYColumn(position,.67);
+		addYColumn(position + distance,.55);
+		addYColumn(position + distance,.67);
+		addYColumnRotate(position+distance/2,.655,10);
+		addYColumnRotate(position+distance/2 + .02,.665,-170);
+	}
+	if(letter == 'o' || letter == "O"){
+		addYColumn(position,.55);
+		addYColumn(position,.67);
+		addYColumn(position + distance,.55);
+		addYColumn(position + distance,.67);
+		addXColumn(position, .54);
+		addXColumn(position, .77);
+	}
+	if(letter == 'p' || letter == "P"){
+		addYColumn(position,.55);
+		addYColumn(position,.67);
+		addYColumn(position + distance,.67);
+		addXColumn(position, .77);
+		addXColumn(position, .65);
+	}
+	if(letter == 'q' || letter == "Q"){
+		addYColumn(position,.55);
+		addYColumn(position,.67);
+		addYColumn(position + distance,.55);
+		addYColumn(position + distance,.67);
+		addXColumn(position, .54);
+		addXColumn(position, .77);
+		addYColumnRotate(position+distance/2 + .01,.635,-160);
+	}
+	if(letter == 'r' || letter == "R"){
+		addYColumn(position,.55);
+		addYColumn(position,.67);
+		addYColumn(position + distance,.67);
+		addXColumn(position, .77);
+		addXColumn(position, .65);
+		addYColumnRotate(position+distance/2 + .01,.655,-160);
+	}
+	if(letter == 's' || letter == "S"){
+		addYColumn(position,.67);
+		addYColumn(position + distance,.55);
+		addXColumn(position, .55);
+		addXColumn(position, .77);
+		addXColumn(position, .65);
+	}
+	if(letter == 't' || letter == "T"){
+		addYColumn(position + distance/2,.55);
+		addYColumn(position + distance/2,.67);
+		addXColumn(position-.03, .77);
+		addXColumn(position+.03, .77);
+	}
+	if(letter == 'u' || letter == "U"){
+		addYColumn(position,.55);
+		addYColumn(position,.67);
+		addYColumn(position + distance,.55);
+		addYColumn(position + distance,.67);
+		addXColumn(position, .55);
+	}
+	if(letter == 'v' || letter == "V"){
+		addYColumnRotate(position+.01,.66,-170);
+		addYColumnRotate(position-.01,.77,-170);
+		addYColumnRotate(position+distance -.01,.66,170);
+		addYColumnRotate(position+distance+.01,.77,170);
+	}
+	if(letter == 'w' || letter == "W"){
+		addYColumn(position,.55);
+		addYColumn(position,.67);
+		addYColumn(position + distance,.55);
+		addYColumn(position + distance,.67);
+		addYColumnRotate(position+distance/2+.01,.66,170);
+		addYColumnRotate(position+distance-.015,.66,-170);
+	}
+	if(letter == 'x' || letter == "X"){
+		addYColumnRotate(position+distance -.02,.66,-165);
+		addYColumnRotate(position+.01,.77,-165);
+		addYColumnRotate(position+.04,.66,165);
+		addYColumnRotate(position+distance+.01,.77,165);
+	}
+	if(letter == 'y' || letter == "Y"){
+		addYColumnRotate(position+.01,.77,-165);
+		addYColumnRotate(position+.04,.66,165);
+		addYColumnRotate(position+distance+.01,.77,165);
+	}
+	if(letter == 'z' || letter == "Z"){
+		addXColumn(position, .55);
+		addXColumn(position, .76);
+		addXColumn(position, .55);
+		addXColumn(position, .76);
+		addYColumnRotate(position+distance/2,.645,-10);
+		addYColumnRotate(position+distance/2 + .015,.675,-190);
+	}
 }
 
 function setAllPoints(){
@@ -470,6 +599,7 @@ function rotateXY( object, degrees){
 	}
 	return object;
 }
+
 function rotateXZ( object, degrees){
     var angles = radians( degrees );
     var c = Math.cos( angles );
@@ -490,6 +620,7 @@ function render()
     gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 	bufferObjects();
     drawObjects();
-
+	readPar();
+	frameCount += 1;
 	requestAnimationFrame(render);
 }
