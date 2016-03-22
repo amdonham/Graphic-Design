@@ -34,6 +34,7 @@ const at = vec3(0.0, -1.0, 1.0);
 const up = vec3(0.0, 1.0, 0.0);
 var zoom;
 var angle;
+var pos = 0;
 
 
 
@@ -78,30 +79,6 @@ window.onload = function init()
 	
 	//View 1
 	calcWalls(0,0,0);
-	
-	/*View 2
-	calcWalls(-.2,.4,.8);
-	zoom = 1.2;
-	angle = 47;*/
-	
-	/*View 3
-	calcWalls(-.2,.4,1.3);
-	zoom = 1.4;
-	angle = 88;
-	*/
-	
-	/*View 4
-	calcWalls(.23,.4,.8);
-	zoom = 1.3;
-	angle = 132;
-	*/
-	
-	/*View 5
-	calcWalls(-.3,.4,.7);
-	zoom = 1.8;
-	angle = -13;
-	*/
-	
 	setAllPoints();	
 	
     modelViewMatrixLoc = gl.getUniformLocation( program, "modelViewMatrix" );
@@ -112,26 +89,27 @@ window.onload = function init()
     document.getElementById("zFarSlider").onchange = function(event) {
         far = event.target.value;
     };
-    document.getElementById("zNearSlider").onchange = function(event) {
-        near = event.target.value;
-    };
-    document.getElementById("radiusSlider").onchange = function(event) {
-       radius = event.target.value;
-    };
-    document.getElementById("thetaSlider").onchange = function(event) {
-        theta = event.target.value* Math.PI/180.0;
-    };
-    document.getElementById("phiSlider").onchange = function(event) {
-        phi = event.target.value* Math.PI/180.0;
-    };
-    document.getElementById("aspectSlider").onchange = function(event) {
-        aspect = event.target.value;
-    };
-    document.getElementById("fovSlider").onchange = function(event) {
-        fovy = event.target.value;
-    };
+
+	window.addEventListener("keydown", function(event){
+	//console.log(event.keyCode);
+	switch(event.keyCode){
+		case 13:
+			if(pos == 5){pos = 0;}
+			else{pos++;}
+	}
+		
+    });
 	
     render();
+}
+
+function setEye(){
+	if(pos == 0){eye = vec3(0,1.7,1.5);}
+	if(pos == 1){eye = vec3(.6,0,1.4);}
+	if(pos == 2){eye = vec3(.6,0,.6);}
+	if(pos == 3){eye = vec3(0,0,.45);}
+	if(pos == 4){eye = vec3(-.6,0,.6);}
+	if(pos == 5){eye = vec3(-.6,0,1.4);}
 }
 
 function calcWalls(x,y,z){
@@ -436,15 +414,12 @@ function rotateXZ( object, degrees){
 	return object;
 }
 
-function render()
-{
+function render(){
     gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     
 	bufferObjects();
-	eye = vec3(.6,0,.6);
-	//at = vec3(0.0,0.0,-0.2);
-	/*eye = vec3(radius*Math.sin(theta)*Math.cos(phi),
-        radius*Math.sin(theta)*Math.sin(phi), radius*Math.cos(theta));*/
+
+	setEye();
     modelViewMatrix = lookAt(eye, at , up);
     projectionMatrix = perspective(fovy, aspect, near, far);
 
