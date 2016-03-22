@@ -13,19 +13,25 @@ var NumVertices  = 108;
 
 var points = [];
 var colors = [];
-var textArray = [];
+
 var program;
 
-var wordIndex = 0;
-var paragraph;
 var frameCount = 1;
-var xAxis = 0;
-var yAxis = 0;
-var zAxis = 0;
-var rotateLeft = false;
-var rotateRight = false;
-var rotateUp = false;
-var rotateDown = false;
+var near = 0.3;
+var far = 3.0;
+var radius = 4.0;
+var theta  = 0.0;
+var phi    = 0.0;
+var dr = 5.0 * Math.PI/180.0;
+
+var  fovy = 45.0;  // Field-of-view in Y direction angle (in degrees)
+var  aspect = 1.0;       // Viewport aspect ratio
+
+var modelViewMatrix, projectionMatrix;
+var modelViewMatrixLoc, projectionMatrixLoc;
+var eye;
+const at = vec3(0.0, -1.0, -0.3);
+const up = vec3(0.0, 1.0, 0.0);
 var zoom;
 var angle;
 
@@ -54,9 +60,9 @@ var wall;
 var walls;			
 var base;
 var axis = 0;
-var theta = [ 4, 0, 0 ];
+//var theta = [ 4, 0, 0 ];
 
-var thetaLoc;
+//var thetaLoc;
 
 window.onload = function init()
 {
@@ -64,10 +70,14 @@ window.onload = function init()
 
     gl = WebGLUtils.setupWebGL( canvas );
     if ( !gl ) { alert( "WebGL isn't available" ); }
+	
+    gl.viewport( 0, 0, canvas.width, canvas.height );
+    gl.clearColor( 1.0, 1.0, 1.0, 1.0 );
+
+    gl.enable(gl.DEPTH_TEST);
+	
 	//View 1
-	calcWalls(0.17,.4,.7);
-	zoom = 1.2;
-	angle = 10;
+	calcWalls(0,0,0);
 	
 	/*View 2
 	calcWalls(-.2,.4,.8);
@@ -91,17 +101,35 @@ window.onload = function init()
 	zoom = 1.8;
 	angle = -13;
 	*/
-	setWalls();
-	//setDisplay();
-	//setPost();
+	
+	setAllPoints();	
+	
+    modelViewMatrixLoc = gl.getUniformLocation( program, "modelViewMatrix" );
+    projectionMatrixLoc = gl.getUniformLocation( program, "projectionMatrix" );
+	
+// sliders for viewing parameters
 
-	setAllPoints();
-	handleRotation();
-
-    gl.viewport( 0, 0, canvas.width, canvas.height );
-    gl.clearColor( 1.0, 1.0, 1.0, 1.0 );
-
-    gl.enable(gl.DEPTH_TEST);
+    document.getElementById("zFarSlider").onchange = function(event) {
+        far = event.target.value;
+    };
+    document.getElementById("zNearSlider").onchange = function(event) {
+        near = event.target.value;
+    };
+    document.getElementById("radiusSlider").onchange = function(event) {
+       radius = event.target.value;
+    };
+    document.getElementById("thetaSlider").onchange = function(event) {
+        theta = event.target.value* Math.PI/180.0;
+    };
+    document.getElementById("phiSlider").onchange = function(event) {
+        phi = event.target.value* Math.PI/180.0;
+    };
+    document.getElementById("aspectSlider").onchange = function(event) {
+        aspect = event.target.value;
+    };
+    document.getElementById("fovSlider").onchange = function(event) {
+        fovy = event.target.value;
+    };
 	
     render();
 }
@@ -213,82 +241,11 @@ function calcWalls(x,y,z){
 					]);
 }
 
-function handleRotation(){
-	window.addEventListener("keydown", function(event){
-	//console.log(event.keyCode);
-	switch(event.keyCode){
-		case 37:
-			rotateLeft = true;
-			break;
-		case 38:
-			rotateUp = true;
-			break;
-		case 39:
-			rotateRight = true;
-			break;
-		case 40:
-			rotateDown = true;
-			break;
-			
-	}
-		
-    });
-	
-	window.addEventListener("keyup", function(event){
-		//console.log(event.keyCode);
-		switch(event.keyCode){
-		case 37:
-			rotateLeft = false;
-			break;
-		case 38:
-			rotateUp = false;
-			break;
-		case 39:
-			rotateRight = false;
-			break;
-		case 40:
-			rotateDown = false;
-			break;
-		}
-		
-    });	
-}
-
-function drawObjects(){
-	if(rotateLeft){	
-		xAxis += 2;
-		rotateXY(display,2); 
-		rotateXY(post,2); 
-		for(var i = 0; i < textArray.length;i++){rotateXY(textArray[i],2);}
-		setAllPoints();}
-	if(rotateRight){
-		xAxis += -2;
-		rotateXY(display,-2); 
-		rotateXY(post,-2);
-		for(var i = 0; i < textArray.length;i++){rotateXY(textArray[i],-2);}
-		setAllPoints();}
-	if(rotateUp){
-		yAxis += -2;
-		rotateYZ(display,-2);
-		for(var i = 0; i < textArray.length;i++){rotateYZ(textArray[i],-2);}		
-		setAllPoints();}
-	if(rotateDown){	
-		yAxis+= 2;
-		rotateYZ(display, 2); 
-		for(var i = 0; i < textArray.length;i++){rotateYZ(textArray[i],2);}
-		setAllPoints();}
-
-    gl.uniform3fv(thetaLoc, theta);
-	gl.drawArrays( gl.TRIANGLES, 0, points.length );
-}
 
 function bufferObjects(){
      //
     //  Load shaders and initialize attribute buffers
     //
-	program = initShaders( gl, "vertex-shader", "fragment-shader" );
-    gl.useProgram( program );
-
     var cBuffer = gl.createBuffer();
     gl.bindBuffer( gl.ARRAY_BUFFER, cBuffer );
     gl.bufferData( gl.ARRAY_BUFFER, flatten(colors), gl.STATIC_DRAW );
@@ -306,7 +263,6 @@ function bufferObjects(){
     gl.vertexAttribPointer( vPosition, 4, gl.FLOAT, false, 0, 0 );
     gl.enableVertexAttribArray( vPosition );
 
-    thetaLoc = gl.getUniformLocation(program, "theta");
 }
 
 function addXColumn(x,y){
@@ -363,10 +319,8 @@ function setAllPoints(){
 	points = [];
 	colors = [];
 	setWalls();
-	//setDisplay();
-	//setPost();
-	
-	var program = initShaders( gl, "vertex-shader", "fragment-shader" );
+
+	program = initShaders( gl, "vertex-shader", "fragment-shader" );
     gl.useProgram( program );
 	
 	var cBuffer = gl.createBuffer();
@@ -385,29 +339,8 @@ function setAllPoints(){
     var vPosition = gl.getAttribLocation( program, "vPosition" );
     gl.vertexAttribPointer( vPosition, 4, gl.FLOAT, false, 0, 0 );
     gl.enableVertexAttribArray( vPosition );
-	thetaLoc = gl.getUniformLocation(program, "theta");
 }
 
-function setYColumn(col){
-	setYColumnPoints( 1, 0, 3, 2, 1,col );
-    setYColumnPoints( 2, 3, 7, 6, 0,col );
-    setYColumnPoints( 3, 0, 4, 7, 0,col );
-    setYColumnPoints( 6, 5, 1, 2, 0,col );
-    setYColumnPoints( 4, 5, 6, 7, 0,col );
-    setYColumnPoints( 5, 4, 0, 1, 0,col );
-}
-
-function setYColumnPoints(a,b,c,d,colorIndex,col){
-	var indices = [ a, b, c, a, c, d ];
-    for ( var i = 0; i < indices.length; ++i ) {
-        points.push( col[indices[i]] );
-        //colors.push( vertexColors[indices[i]] );
-
-        // for solid colored faces use
-        colors.push(vertexColors[colorIndex]);
-
-    }
-}
 
 function setBase(){
 	setBasePoints( 1, 0, 3, 2, 0 );
@@ -421,7 +354,7 @@ function setBase(){
 
 function setWalls(){
 	for(var i = 0; i < walls.length;++i){
-		wall = rotateXY(walls[i],angle);
+		wall = walls[i];
 		setWall();
 	}
 }
@@ -434,26 +367,6 @@ function setWall(){
     setWallPoints( 5, 4, 0, 1, 1 );
 }
 
-function setPost(){
-	setPostPoints( 1, 0, 3, 2, 3 );
-    setPostPoints( 2, 3, 7, 6, 6 );
-    setPostPoints( 3, 0, 4, 7, 3 );
-    setPostPoints( 6, 5, 1, 2, 6 );
-    setPostPoints( 4, 5, 6, 7, 3 );
-    setPostPoints( 5, 4, 0, 1, 6 );
-}
-
-function setPostPoints(a,b,c,d,colorIndex){
-	var indices = [ a, b, c, a, c, d ];
-    for ( var i = 0; i < indices.length; ++i ) {
-        points.push( post[indices[i]] );
-        //colors.push( vertexColors[indices[i]] );
-
-        // for solid colored faces use
-        colors.push(vertexColors[colorIndex]);
-
-    }
-}
 
 function setWallPoints(a,b,c,d,colorIndex){
 	var indices = [ a, b, c, a, c, d ];
@@ -526,8 +439,18 @@ function rotateXZ( object, degrees){
 function render()
 {
     gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    
 	bufferObjects();
-    drawObjects();
-	frameCount += 1;
-	requestAnimationFrame(render);
+	eye = vec3(.6,0,1.6);
+	//at = vec3(0.0,0.0,-0.2);
+	/*eye = vec3(radius*Math.sin(theta)*Math.cos(phi),
+        radius*Math.sin(theta)*Math.sin(phi), radius*Math.cos(theta));*/
+    modelViewMatrix = lookAt(eye, at , up);
+    projectionMatrix = perspective(fovy, aspect, near, far);
+
+    gl.uniformMatrix4fv( modelViewMatrixLoc, false, flatten(modelViewMatrix) );
+    gl.uniformMatrix4fv( projectionMatrixLoc, false, flatten(projectionMatrix) );	
+
+	gl.drawArrays( gl.TRIANGLES, 0, points.length );
+	requestAnimFrame(render);
 }
