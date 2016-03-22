@@ -30,7 +30,7 @@ var  aspect = 1.0;       // Viewport aspect ratio
 var modelViewMatrix, projectionMatrix;
 var modelViewMatrixLoc, projectionMatrixLoc;
 var eye;
-const at = vec3(0.0, -1.0, -0.3);
+const at = vec3(0.0, -1.0, 1.0);
 const up = vec3(0.0, 1.0, 0.0);
 var zoom;
 var angle;
@@ -441,7 +441,7 @@ function render()
     gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     
 	bufferObjects();
-	eye = vec3(.6,0,1.6);
+	eye = vec3(.6,0,.6);
 	//at = vec3(0.0,0.0,-0.2);
 	/*eye = vec3(radius*Math.sin(theta)*Math.cos(phi),
         radius*Math.sin(theta)*Math.sin(phi), radius*Math.cos(theta));*/
