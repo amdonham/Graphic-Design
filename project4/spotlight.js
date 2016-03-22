@@ -13,6 +13,7 @@ var NumVertices  = 108;
 
 var points = [];
 var colors = [];
+var normalsArray = [];
 
 var program;
 
@@ -26,11 +27,31 @@ var dr = 5.0 * Math.PI/180.0;
 
 var  fovy = 45.0;  // Field-of-view in Y direction angle (in degrees)
 var  aspect = 1.0;       // Viewport aspect ratio
+var va = vec4(0.0, 0.0, -1.0,1);
+var vb = vec4(0.0, 0.942809, 0.333333, 1);
+var vc = vec4(-0.816497, -0.471405, 0.333333, 1);
+var vd = vec4(0.816497, -0.471405, 0.333333,1);
+
+var lightPosition = vec4(.6, 1.5, .5, 0.0 );
+var lightAmbient = vec4(0.2, 0.2, 0.2, 1.0 );
+var lightDiffuse = vec4( 1.0, 1.0, 1.0, 1.0 );
+var lightSpecular = vec4( 1.0, 1.0, 1.0, 1.0 );
+
+var materialAmbient = vec4( 1.0, 0.0, 1.0, 1.0 );
+var materialDiffuse = vec4( 0.5, 0.4, 0.0, 1.0 );
+var materialSpecular = vec4( 1.0, 1.0, 1.0, 1.0 );
+var materialShininess = 100.0;
+
+var ctm;
+var ambientColor, diffuseColor, specularColor;
 
 var modelViewMatrix, projectionMatrix;
 var modelViewMatrixLoc, projectionMatrixLoc;
+
+var normalMatrix, normalMatrixLoc;
+
 var eye;
-const at = vec3(0.0, -1.0, 1.0);
+const at = vec3(0.0, -.8, .8);
 const up = vec3(0.0, 1.0, 0.0);
 var zoom;
 var angle;
@@ -77,12 +98,27 @@ window.onload = function init()
 
     gl.enable(gl.DEPTH_TEST);
 	
-	//View 1
+	var ambientProduct = mult(lightAmbient, materialAmbient);
+    var diffuseProduct = mult(lightDiffuse, materialDiffuse);
+    var specularProduct = mult(lightSpecular, materialSpecular);
+	
 	calcWalls(0,0,0);
-	setAllPoints();	
+	setAllPoints();
 	
     modelViewMatrixLoc = gl.getUniformLocation( program, "modelViewMatrix" );
     projectionMatrixLoc = gl.getUniformLocation( program, "projectionMatrix" );
+	normalMatrixLoc = gl.getUniformLocation( program, "normalMatrix" );
+	
+	gl.uniform4fv( gl.getUniformLocation(program,
+       "ambientProduct"),flatten(ambientProduct) );
+    gl.uniform4fv( gl.getUniformLocation(program,
+       "diffuseProduct"),flatten(diffuseProduct) );
+    gl.uniform4fv( gl.getUniformLocation(program,
+       "specularProduct"),flatten(specularProduct) );
+    gl.uniform4fv( gl.getUniformLocation(program,
+       "lightPosition"),flatten(lightPosition) );
+    gl.uniform1f( gl.getUniformLocation(program,
+       "shininess"),materialShininess );
 	
 // sliders for viewing parameters
 
@@ -107,8 +143,8 @@ function setEye(){
 	if(pos == 0){eye = vec3(0,1.7,1.5);}
 	if(pos == 1){eye = vec3(.6,0,1.4);}
 	if(pos == 2){eye = vec3(.6,0,.6);}
-	if(pos == 3){eye = vec3(0,0,.45);}
-	if(pos == 4){eye = vec3(-.6,0,.6);}
+	if(pos == 3){eye = vec3(0,0,.6);}
+	if(pos == 4){eye = vec3(-.6,0,.8);}
 	if(pos == 5){eye = vec3(-.6,0,1.4);}
 }
 
@@ -317,6 +353,12 @@ function setAllPoints(){
     var vPosition = gl.getAttribLocation( program, "vPosition" );
     gl.vertexAttribPointer( vPosition, 4, gl.FLOAT, false, 0, 0 );
     gl.enableVertexAttribArray( vPosition );
+	
+
+
+    var vNormal = gl.getAttribLocation( program, "vNormal" );
+    gl.vertexAttribPointer( vNormal, 4, gl.FLOAT, false, 0, 0 );
+    gl.enableVertexAttribArray( vNormal);
 }
 
 
@@ -422,10 +464,17 @@ function render(){
 	setEye();
     modelViewMatrix = lookAt(eye, at , up);
     projectionMatrix = perspective(fovy, aspect, near, far);
+	
+	normalMatrix = [
+        vec3(modelViewMatrix[0][0], modelViewMatrix[0][1], modelViewMatrix[0][2]),
+        vec3(modelViewMatrix[1][0], modelViewMatrix[1][1], modelViewMatrix[1][2]),
+        vec3(modelViewMatrix[2][0], modelViewMatrix[2][1], modelViewMatrix[2][2])
+    ];
 
     gl.uniformMatrix4fv( modelViewMatrixLoc, false, flatten(modelViewMatrix) );
-    gl.uniformMatrix4fv( projectionMatrixLoc, false, flatten(projectionMatrix) );	
+    gl.uniformMatrix4fv( projectionMatrixLoc, false, flatten(projectionMatrix) );
+    gl.uniformMatrix3fv(normalMatrixLoc, false, flatten(normalMatrix));
 
 	gl.drawArrays( gl.TRIANGLES, 0, points.length );
-	requestAnimFrame(render);
+	window.requestAnimFrame(render);
 }
