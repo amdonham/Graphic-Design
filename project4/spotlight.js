@@ -20,27 +20,23 @@ var program;
 var frameCount = 1;
 var near = 0.3;
 var far = 3.0;
-var radius = 4.0;
+var radius = 2.0;
 var theta  = 0.0;
 var phi    = 0.0;
 var dr = 5.0 * Math.PI/180.0;
 
 var  fovy = 45.0;  // Field-of-view in Y direction angle (in degrees)
 var  aspect = 1.0;       // Viewport aspect ratio
-var va = vec4(0.0, 0.0, -1.0,1);
-var vb = vec4(0.0, 0.942809, 0.333333, 1);
-var vc = vec4(-0.816497, -0.471405, 0.333333, 1);
-var vd = vec4(0.816497, -0.471405, 0.333333,1);
 
-var lightPosition = vec4(.6, 1.5, .5, 0.0 );
-var lightAmbient = vec4(0.2, 0.2, 0.2, 1.0 );
-var lightDiffuse = vec4( 1.0, 1.0, 1.0, 1.0 );
+var lightPosition = vec4(0.7, -.5, 1.0, 1.0 );
+var lightAmbient = vec4(1, 1, 1, 1.0 );
+var lightDiffuse = vec4( 0.3, 0.3, 0.3, 0.3 );
 var lightSpecular = vec4( 1.0, 1.0, 1.0, 1.0 );
 
 var materialAmbient = vec4( 1.0, 0.0, 1.0, 1.0 );
-var materialDiffuse = vec4( 0.5, 0.4, 0.0, 1.0 );
+var materialDiffuse = vec4( 1.0, 0.8, 0.0, 1.0 );
 var materialSpecular = vec4( 1.0, 1.0, 1.0, 1.0 );
-var materialShininess = 100.0;
+var materialShininess = 20.0;
 
 var ctm;
 var ambientColor, diffuseColor, specularColor;
@@ -51,8 +47,8 @@ var modelViewMatrixLoc, projectionMatrixLoc;
 var normalMatrix, normalMatrixLoc;
 
 var eye;
-const at = vec3(0.0, -.8, .8);
-const up = vec3(0.0, 1.0, 0.0);
+var at = vec3(0.0, -0.8, 0.8);
+var up = vec3(0.0, 1.0, 0.0);
 var zoom;
 var angle;
 var pos = 0;
@@ -137,6 +133,44 @@ window.onload = function init()
     });
 	
     render();
+}
+
+function setLight(){
+	eye = vec3(0.0,0.2,0.0);
+	at = vec3(0,-2,-1);
+	up = vec3(0.0, 1.0, 0.0);
+	lightAmbient = vec4(1, 1, 1, 1.0 );
+	lightDiffuse = vec4( 0.0, 0.0, 0.0, 0.0 );
+	lightSpecular = vec4( 0.5, 0.5, 0.5, 1.0 );
+
+	if(document.getElementById("1").checked){eye = vec3(-0.3,0.2,0.0); lightPosition = vec4( 2.0, 8.0, 2.0, 1.0 );}
+	if(document.getElementById("2").checked){eye = vec3(0.0,0.2,0.0); lightPosition = vec4( 8.0, 1.0, 2.0, 1.0 );}
+	if(document.getElementById("3").checked){eye = vec3(0.0,0.2,0.0); lightPosition = vec4( 0.0, 1.0, 2.0, 1.0 );}
+	if(document.getElementById("4").checked){eye = vec3(0.0,0.2,0.0); lightPosition = vec4( -8.0, 1.0, 2.0, 1.0 );}
+	if(document.getElementById("5").checked){eye = vec3(-0.3,0.3,0.0); lightPosition = vec4( -14.0, 22.0, 2.0, 1.0 );}
+
+	modelViewMatrix = lookAt(eye, at , up);
+    projectionMatrix = perspective(fovy, aspect, near, far);
+	
+	
+	var ambientProduct = mult(lightAmbient, materialAmbient);
+    var diffuseProduct = mult(lightDiffuse, materialDiffuse);
+    var specularProduct = mult(lightSpecular, materialSpecular);
+	
+	modelViewMatrixLoc = gl.getUniformLocation( program, "modelViewMatrix" );
+    projectionMatrixLoc = gl.getUniformLocation( program, "projectionMatrix" );
+	normalMatrixLoc = gl.getUniformLocation( program, "normalMatrix" );
+	
+	gl.uniform4fv( gl.getUniformLocation(program,
+       "ambientProduct"),flatten(ambientProduct) );
+    gl.uniform4fv( gl.getUniformLocation(program,
+       "diffuseProduct"),flatten(diffuseProduct) );
+    gl.uniform4fv( gl.getUniformLocation(program,
+       "specularProduct"),flatten(specularProduct) );
+    gl.uniform4fv( gl.getUniformLocation(program,
+       "lightPosition"),flatten(lightPosition) );
+    gl.uniform1f( gl.getUniformLocation(program,
+       "shininess"),materialShininess );
 }
 
 function setEye(){
@@ -462,17 +496,25 @@ function render(){
 	bufferObjects();
 
 	setEye();
+	at = vec3(0.0, -0.8, 0.8);
+	up = vec3(0.0, 1.0, 0.0);
     modelViewMatrix = lookAt(eye, at , up);
     projectionMatrix = perspective(fovy, aspect, near, far);
 	
+
+
+    gl.uniformMatrix4fv( modelViewMatrixLoc, false, flatten(modelViewMatrix) );
+    gl.uniformMatrix4fv( projectionMatrixLoc, false, flatten(projectionMatrix) );
+	
+	
+	setLight();
+	modelViewMatrix = lookAt(eye, at , up);
+	projectionMatrix = perspective(fovy, aspect, near, far);
 	normalMatrix = [
         vec3(modelViewMatrix[0][0], modelViewMatrix[0][1], modelViewMatrix[0][2]),
         vec3(modelViewMatrix[1][0], modelViewMatrix[1][1], modelViewMatrix[1][2]),
         vec3(modelViewMatrix[2][0], modelViewMatrix[2][1], modelViewMatrix[2][2])
     ];
-
-    gl.uniformMatrix4fv( modelViewMatrixLoc, false, flatten(modelViewMatrix) );
-    gl.uniformMatrix4fv( projectionMatrixLoc, false, flatten(projectionMatrix) );
     gl.uniformMatrix3fv(normalMatrixLoc, false, flatten(normalMatrix));
 
 	gl.drawArrays( gl.TRIANGLES, 0, points.length );
