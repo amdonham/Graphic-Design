@@ -143,7 +143,7 @@ function setLight(){
 	lightDiffuse = vec4( 0.0, 0.0, 0.0, 0.0 );
 	lightSpecular = vec4( 0.5, 0.5, 0.5, 1.0 );
 
-	if(document.getElementById("1").checked){eye = vec3(-0.3,0.2,0.0); lightPosition = vec4( 2.0, 8.0, 2.0, 1.0 );}
+	if(document.getElementById("1").checked){eye = vec3(-0.5,0.2,0.5); lightPosition = vec4( 0.5, 0.0, 0.5, 1.0 );}
 	if(document.getElementById("2").checked){eye = vec3(0.0,0.2,0.0); lightPosition = vec4( 8.0, 1.0, 2.0, 1.0 );}
 	if(document.getElementById("3").checked){eye = vec3(0.0,0.2,0.0); lightPosition = vec4( 0.0, 1.0, 2.0, 1.0 );}
 	if(document.getElementById("4").checked){eye = vec3(0.0,0.2,0.0); lightPosition = vec4( -8.0, 1.0, 2.0, 1.0 );}
