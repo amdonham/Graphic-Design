@@ -1,7 +1,7 @@
 //Alan Donham
 //CS 435
 //Project 4
-//This program generates a 3d display of a room with lighting
+//This program plays a gif in a TV scrren
 
 
 "use strict";
@@ -14,11 +14,13 @@ var tablepoints = [];
 var wallpoints = [];
 var TVPoints = [];
 var tvscreenPoints = [];
+var floorPoints = [];
 var points = [];
 var colors = [];
 
 var wall;
 var table;
+var floor;
 var walls;
 var tv;
 var tvscreen;
@@ -78,6 +80,7 @@ var wallTex;
 var tableTex;
 var tvTex;
 var tvOff;
+var floorTex;
 var animation = [];
 var currentAnimation = 0;
 var on = false;
@@ -98,6 +101,7 @@ window.onload = function init()
 
     gl.enable(gl.DEPTH_TEST);
 	drawTable();
+	drawFloor();
 	drawTV();
 	drawTVScreen();
 	calcWalls(0,0,.3);
@@ -110,6 +114,7 @@ window.onload = function init()
 	tableTex = document.getElementById("tableTexture");
 	tvTex = document.getElementById("tvTexture");
 	tvOff = document.getElementById("tvOff");
+	floorTex = document.getElementById("floor");
 	//Get all animation frames
 	for(var i = 1; i <= 41; ++i){
 		var fname = document.getElementById("anim" + i.toString());
@@ -179,18 +184,6 @@ function calcWalls(x,y,z){
 					vec4(  0.75+x, -0.2+y,  -0.49+z, 1.0 ),
 					vec4(  0.75+x, -0.89+y, -0.49+z, 1.0 )
 					]);
-
-					
-		//Floor
-		walls.push([vec4( -0.75+x, -0.9+y, -0.5+z, 1.0 ),
-					vec4( -0.75+x, -0.89+y,-0.5+z, 1.0 ),
-					vec4(  0.75+x, -0.89+y,-0.5+z, 1.0 ),
-					vec4(  0.75+x, -0.9+y, -0.5+z, 1.0 ),
-					vec4( -0.75+x, -0.9+y,  0.5+z, 1.0 ),
-					vec4( -0.75+x, -0.89+y, 0.5+z, 1.0 ),
-					vec4(  0.75+x, -0.89+y, 0.5+z, 1.0 ),
-					vec4(  0.75+x, -0.9+y,  0.5+z, 1.0 )
-					]);
 }
 
 function bufferObjects(){
@@ -226,6 +219,7 @@ function setAllPoints(){
 	setWalls();
 	setTable();
 	setTV();
+	setFloor();
 	setTVScreen();
 
 	program = initShaders( gl, "vertex-shader", "fragment-shader" );
@@ -274,6 +268,15 @@ function setTable(){
     setTablePoints( 6, 5, 1, 2);
     setTablePoints( 4, 5, 6, 7);
     setTablePoints( 5, 4, 0, 1);
+}
+
+function setFloor(){
+	setFloorPoints( 1, 0, 3, 2);
+    setFloorPoints( 2, 3, 7, 6);
+    setFloorPoints( 3, 0, 4, 7);
+    setFloorPoints( 6, 5, 1, 2);
+    setFloorPoints( 4, 5, 6, 7);
+    setFloorPoints( 5, 4, 0, 1);
 }
 
 function setTV(){
@@ -325,6 +328,18 @@ function drawTV(){
 				vec4(  0.25,  -0.15,  0.7, 1.0 ),
 				vec4(  0.25,  -0.65,   0.7, 1.0 )
 				]);
+}
+
+function drawFloor(){
+	floor =([		vec4( -0.75, -0.9, -0.5, 1.0 ),
+					vec4( -0.75, -0.89,-0.5, 1.0 ),
+					vec4(  0.75, -0.89,-0.5, 1.0 ),
+					vec4(  0.75, -0.9, -0.5, 1.0 ),
+					vec4( -0.75, -0.9,  1.5, 1.0 ),
+					vec4( -0.75, -0.89, 1.5, 1.0 ),
+					vec4(  0.75, -0.89, 1.5, 1.0 ),
+					vec4(  0.75, -0.9,  1.5, 1.0 )
+					]);
 }
 
 function drawTVScreen(){
@@ -387,6 +402,32 @@ function setTVPoints(a,b,c,d){
      texCoordsArray.push(texCoord[2]);
 
      TVPoints.push(tv[d]);
+     colors.push(vertexColors[1]);
+     texCoordsArray.push(texCoord[3]);
+}
+
+function setFloorPoints(a,b,c,d){
+     floorPoints.push(floor[a]);
+     colors.push(vertexColors[1]);
+     texCoordsArray.push(texCoord[0]);
+
+     floorPoints.push(floor[b]);
+     colors.push(vertexColors[1]);
+     texCoordsArray.push(texCoord[1]);
+
+     floorPoints.push(floor[c]);
+     colors.push(vertexColors[1]);
+     texCoordsArray.push(texCoord[2]);
+
+     floorPoints.push(floor[a]);
+     colors.push(vertexColors[1]);
+     texCoordsArray.push(texCoord[0]);
+
+     floorPoints.push(floor[c]);
+     colors.push(vertexColors[1]);
+     texCoordsArray.push(texCoord[2]);
+
+     floorPoints.push(floor[d]);
      colors.push(vertexColors[1]);
      texCoordsArray.push(texCoord[3]);
 }
@@ -521,6 +562,11 @@ function render(){
 	
 	points = wallpoints;
 	configureTexture( wallTex );
+	bufferObjects();
+	gl.drawArrays( gl.TRIANGLES, 0, points.length );
+	
+	points = floorPoints;
+	configureTexture( floorTex );
 	bufferObjects();
 	gl.drawArrays( gl.TRIANGLES, 0, points.length );
 
