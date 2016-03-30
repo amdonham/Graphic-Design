@@ -1,7 +1,7 @@
 //Alan Donham
 //CS 435
-//Project 3
-//This program generates a 3d display of text that you can rotate
+//Project 4
+//This program generates a 3d display of a room with lighting
 
 
 "use strict";
@@ -37,6 +37,7 @@ var materialAmbient = vec4( 1.0, 0.0, 1.0, 1.0 );
 var materialDiffuse = vec4( 1.0, 0.8, 0.0, 1.0 );
 var materialSpecular = vec4( 1.0, 1.0, 1.0, 1.0 );
 var materialShininess = 20.0;
+var cangle = 3.5
 
 var ctm;
 var ambientColor, diffuseColor, specularColor;
@@ -116,12 +117,12 @@ window.onload = function init()
     gl.uniform1f( gl.getUniformLocation(program,
        "shininess"),materialShininess );
 	
-// sliders for viewing parameters
-
-    document.getElementById("zFarSlider").onchange = function(event) {
-        far = event.target.value;
-    };
-
+	document.getElementById("inc").addEventListener("click", function(){
+		cangle += 1;
+	});
+	document.getElementById("dec").addEventListener("click", function(){
+		cangle -= 1;
+	});
 	window.addEventListener("keydown", function(event){
 	//console.log(event.keyCode);
 	switch(event.keyCode){
@@ -131,6 +132,8 @@ window.onload = function init()
 	}
 		
     });
+	
+	
 	
     render();
 }
@@ -143,11 +146,11 @@ function setLight(){
 	lightDiffuse = vec4( 0.0, 0.0, 0.0, 0.0 );
 	lightSpecular = vec4( 0.5, 0.5, 0.5, 1.0 );
 
-	if(document.getElementById("1").checked){eye = vec3(-0.5,0.2,0.5); lightPosition = vec4( 0.5, 0.0, 0.5, 1.0 );}
-	if(document.getElementById("2").checked){eye = vec3(0.0,0.2,0.0); lightPosition = vec4( 8.0, 1.0, 2.0, 1.0 );}
-	if(document.getElementById("3").checked){eye = vec3(0.0,0.2,0.0); lightPosition = vec4( 0.0, 1.0, 2.0, 1.0 );}
-	if(document.getElementById("4").checked){eye = vec3(0.0,0.2,0.0); lightPosition = vec4( -8.0, 1.0, 2.0, 1.0 );}
-	if(document.getElementById("5").checked){eye = vec3(-0.3,0.3,0.0); lightPosition = vec4( -14.0, 22.0, 2.0, 1.0 );}
+	if(document.getElementById("1").checked){eye = vec3(-.7,0.2,0.5); lightPosition = vec4( 1.5, 4.5, cangle, 1.0 );}
+	if(document.getElementById("2").checked){eye = vec3(0.0,0.2,0.0); lightPosition = vec4( 8.0, 1.0, cangle, 1.0 );}
+	if(document.getElementById("3").checked){eye = vec3(0.0,0.2,0.0); lightPosition = vec4( 0.0, 1.0, cangle, 1.0 );}
+	if(document.getElementById("4").checked){eye = vec3(0.0,0.2,0.0); lightPosition = vec4( -8.0, 1.0, cangle, 1.0 );}
+	if(document.getElementById("5").checked){eye = vec3(-0.3,0.3,0.0); lightPosition = vec4( -14.0, 22.0, cangle, 1.0 );}
 
 	modelViewMatrix = lookAt(eye, at , up);
     projectionMatrix = perspective(fovy, aspect, near, far);
@@ -298,9 +301,9 @@ function bufferObjects(){
     gl.bindBuffer( gl.ARRAY_BUFFER, cBuffer );
     gl.bufferData( gl.ARRAY_BUFFER, flatten(colors), gl.STATIC_DRAW );
 
-    var vColor = gl.getAttribLocation( program, "vColor" );
-    gl.vertexAttribPointer( vColor, 4, gl.FLOAT, false, 0, 0 );
-    gl.enableVertexAttribArray( vColor );
+   // var vColor = gl.getAttribLocation( program, "vColor" );
+    //gl.vertexAttribPointer( vColor, 4, gl.FLOAT, false, 0, 0 );
+    //gl.enableVertexAttribArray( vColor );
 
     var vBuffer = gl.createBuffer();
     gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer );
