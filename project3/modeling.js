@@ -28,7 +28,6 @@ var rotateUp = false;
 var rotateDown = false;
 
 
-
 var vertexColors = [[ 0.0, 0.0, 0.0, 1.0 ],  // black
 					[ 1.0, 0.0, 0.0, 1.0 ],  // red
 					[ 1.0, 1.0, 0.0, 1.0 ],  // yellow

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<title>CS435 Project 6 Alan Donham</title>
+<head>
+	<meta content = "text/html;charset=utf-8" http-equiv="Content-Type">
+	<meta content = "utf-8" http-equiv = "encoding">
+</head>
+<script id="vertex-shader" type="x-shader/x-vertex">
+
+attribute  vec4 vPosition;
+
+attribute  vec2 vTexCoord;
+
+
+varying vec2 fTexCoord;
+uniform mat4 modelViewMatrix;
+uniform mat4 projectionMatrix;
+
+
+void
+main()
+{
+    gl_Position = projectionMatrix * modelViewMatrix * vPosition;
+    fTexCoord = vTexCoord;
+
+}
+</script>
+
+<script id="fragment-shader" type="x-shader/x-fragment">
+
+precision mediump float;
+
+varying vec4 fColor;
+varying  vec2 fTexCoord;
+
+uniform sampler2D texture;
+
+void
+main()
+{
+    float alpha = 1.0;
+    vec4 greenScreen = vec4(0.0,1.0,0.0,1.0);
+    vec4 color = texture2D(texture, fTexCoord); 
+    vec3 diff = color.xyz - greenScreen.xyz;
+    if(dot(diff, diff) < 0.55) {
+		alpha = 0.0;
+    }
+
+    gl_FragColor = vec4(color.rgb,color.a*alpha);
+
+}
+</script>
+
+<script type="text/javascript" src="../Common/webgl-utils.js"></script>
+<script type="text/javascript" src="../Common/initShaders.js"></script>
+<script type="text/javascript" src="../Common/MV.js"></script>
+<script type="text/javascript" src="blending.js"></script>
+
+<body>
+<canvas id="gl-canvas" width="512"" height="512">
+Oops ... your browser doesn't support the HTML5 canvas element
+</canvas>
+<img id = "carTex" src = "carTex.jpg"  hidden></img>
+<img id = "roadTex" src = "roadTex.jpg"  hidden></img>
+
+
+</body>
+</html>
