@@ -50,24 +50,25 @@ var vertexColors = [[ 0.0, 0.0, 0.0, 1.0 ],  // black
 					[ 1.0, 1.0, 1.0, 1.0 ]   // white
 					];
 	
-var display = [	vec4( -.5,  -.5,  0.5, 1.0 ),
-				vec4( -.5, .5,  0.5, 1.0 ),
-				vec4(  .5, .5,  0.5, 1.0 ),
-				vec4(  .5,  -.5,  0.5, 1.0 ),
-				vec4( -.5,  -.5,  0.4, 1.0 ),
-				vec4( -.5, .5,  0.4, 1.0 ),
-				vec4(  .5, .5,  0.4, 1.0 ),
-				vec4(  .5,  -.5,  0.4, 1.0 )
+var display = [	vec4( -.9,  -.9,  0.5, 1.0 ),
+				vec4( -.9, .9,  0.5, 1.0 ),
+				vec4(  .9, .9,  0.5, 1.0 ),
+				vec4(  .9,  -.9,  0.5, 1.0 ),
+				vec4( -.9,  -.9,  0.4, 1.0 ),
+				vec4( -.9, .9,  0.4, 1.0 ),
+				vec4(  .9, .9,  0.4, 1.0 ),
+				vec4(  .9,  -.9,  0.4, 1.0 )
 				];
-var display2 = [vec4( -.5,  .5,  0.4, 1.0 ),
-				vec4( -.5, -.5,  0.4, 1.0 ),
-				vec4(  .5, -.5,  0.4, 1.0 ),
-				vec4(  .5,  .5,  0.4, 1.0 ),
-				vec4( -.5,  .5,  0.3, 1.0 ),
-				vec4( -.5, -.5,  0.3, 1.0 ),
-				vec4(  .5, -.5,  0.3, 1.0 ),
-				vec4(  .5,  .5,  0.3, 1.0 )
+var display2 = [vec4( -1,  1,  0.4, 1.0 ),
+				vec4( -1, -1,  0.4, 1.0 ),
+				vec4(  1, -1,  0.4, 1.0 ),
+				vec4(  1,  1,  0.4, 1.0 ),
+				vec4( -1,  1,  0.3, 1.0 ),
+				vec4( -1, -1,  0.3, 1.0 ),
+				vec4(  1, -1,  0.3, 1.0 ),
+				vec4(  1,  1,  0.3, 1.0 )
 				];
+
 var axis = 0;
 
 window.onload = function init()
@@ -216,6 +217,7 @@ function render(){
 
     gl.uniformMatrix4fv( modelViewMatrixLoc, false, flatten(modelViewMatrix) );
     gl.uniformMatrix4fv( projectionMatrixLoc, false, flatten(projectionMatrix) );
+	
 	gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 	gl.disable(gl.DEPTH_TEST);
 	gl.enable(gl.BLEND);
