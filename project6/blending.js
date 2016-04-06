@@ -1,7 +1,7 @@
 //Alan Donham
 //CS 435
 //Project 6
-//This program plays a gif in a TV scrren
+//This program displays a car driving down a road
 
 
 "use strict";
@@ -13,19 +13,8 @@ var colors = [];
 
 
 var program;
-var frameCount = 1;
 
-///////////////Set up the View///////////////
-var near = 0.3;
-var far = 3.0;
-var  fovy = 45.0;  // Field-of-view in Y direction angle (in degrees)
-var  aspect = 1.0;       // Viewport aspect ratio
-var modelViewMatrix, projectionMatrix;
-var modelViewMatrixLoc, projectionMatrixLoc;
-var eye;
-var at = vec3(0.0, 0.0, 1.0);
-var up = vec3(0.0, 1.0, 0.0);
-/////////////////////////////////////////////
+
 
 ///////////////Set up textures///////////////
 var texSize = 128;
@@ -39,7 +28,6 @@ var texCoord = [
 ];
 /////////////////////////////////////////////
 
-
 var vertexColors = [[ 0.0, 0.0, 0.0, 1.0 ],  // black
 					[ 1.0, 0.0, 0.0, 1.0 ],  // red
 					[ 1.0, 1.0, 0.0, 1.0 ],  // yellow
@@ -50,26 +38,24 @@ var vertexColors = [[ 0.0, 0.0, 0.0, 1.0 ],  // black
 					[ 1.0, 1.0, 1.0, 1.0 ]   // white
 					];
 	
-var display = [	vec4( -.9,  -.9,  0.5, 1.0 ),
-				vec4( -.9, .9,  0.5, 1.0 ),
-				vec4(  .9, .9,  0.5, 1.0 ),
-				vec4(  .9,  -.9,  0.5, 1.0 ),
-				vec4( -.9,  -.9,  0.4, 1.0 ),
-				vec4( -.9, .9,  0.4, 1.0 ),
-				vec4(  .9, .9,  0.4, 1.0 ),
-				vec4(  .9,  -.9,  0.4, 1.0 )
+var display = [	vec4( -1,  -1,  0.5, 1.0 ),
+				vec4( -1,   1,  0.5, 1.0 ),
+				vec4(  1,   1,  0.5, 1.0 ),
+				vec4(  1,  -1,  0.5, 1.0 ),
+				vec4( -1,  -1,  0.4, 1.0 ),
+				vec4( -1,   1,  0.4, 1.0 ),
+				vec4(  1,   1,  0.4, 1.0 ),
+				vec4(  1,  -1,  0.4, 1.0 )
 				];
-var display2 = [vec4( -1,  1,  0.4, 1.0 ),
-				vec4( -1, -1,  0.4, 1.0 ),
-				vec4(  1, -1,  0.4, 1.0 ),
+var display2 = [vec4( -1, -1,  0.4, 1.0 ),
+				vec4( -1,  1,  0.4, 1.0 ),
 				vec4(  1,  1,  0.4, 1.0 ),
-				vec4( -1,  1,  0.3, 1.0 ),
+				vec4(  1, -1,  0.4, 1.0 ),
 				vec4( -1, -1,  0.3, 1.0 ),
-				vec4(  1, -1,  0.3, 1.0 ),
-				vec4(  1,  1,  0.3, 1.0 )
+				vec4( -1,  1,  0.3, 1.0 ),
+				vec4(  1,  1,  0.3, 1.0 ),
+				vec4(  1, -1,  0.3, 1.0 )
 				];
-
-var axis = 0;
 
 window.onload = function init()
 {
@@ -81,30 +67,29 @@ window.onload = function init()
     if ( !gl ) { alert( "WebGL isn't available" ); }
     gl.viewport( 0, 0, canvas.width, canvas.height );
     gl.clearColor( 0.0, 0.0, 0.0, 1.0 );
- 
- 
-	
-	
+ 	
 	var carTex = document.getElementById("carTex");
 	var roadTex = document.getElementById("roadTex");
 
-	bufferObjects();
-	
-    modelViewMatrixLoc = gl.getUniformLocation( program, "modelViewMatrix" );
-    projectionMatrixLoc = gl.getUniformLocation( program, "projectionMatrix" );
-
-	/*
-	document.getElementById("forward").onclick = function(){
-		if(!play){
-			if(currentAnimation == 40){currentAnimation = 0;}
-			else{currentAnimation++;}
+	setZoom(1.5);
+	document.getElementById("f").onclick = function(){
+		setZoom(1.1);
+	};
+	document.getElementById("r").onclick = function(){
+		if(display2[1][0] < -1.1){
+			setZoom(.9);
 		}
 	};
-	*/
     render();
 }
 
-
+function setZoom(z){
+	for(var i = 0; i < display2.length;i++){
+		display2[i][0] *=z;
+		display2[i][1] *=z;
+	}
+	console.log(display2[1]);
+}
 function configureTexture( image ) {
     texture = gl.createTexture();
     gl.bindTexture( gl.TEXTURE_2D, texture );
@@ -182,27 +167,27 @@ function setDisplay2(){
 }
 
 function setDisplay2Points(a,b,c,d){
-     points.push(display[a]);
+     points.push(display2[a]);
      colors.push(vertexColors[3]);
      texCoordsArray.push(texCoord[0]);
 
-     points.push(display[b]);
+     points.push(display2[b]);
      colors.push(vertexColors[3]);
      texCoordsArray.push(texCoord[1]);
 
-     points.push(display[c]);
+     points.push(display2[c]);
      colors.push(vertexColors[3]);
      texCoordsArray.push(texCoord[2]);
 
-     points.push(display[a]);
+     points.push(display2[a]);
      colors.push(vertexColors[3]);
      texCoordsArray.push(texCoord[0]);
 
-     points.push(display[c]);
+     points.push(display2[c]);
      colors.push(vertexColors[3]);
      texCoordsArray.push(texCoord[2]);
 
-     points.push(display[d]);
+     points.push(display2[d]);
      colors.push(vertexColors[3]);
      texCoordsArray.push(texCoord[3]);
 }
@@ -210,32 +195,27 @@ function setDisplay2Points(a,b,c,d){
 
 function render(){
     gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-	
-	eye = vec3(0.0,0.0,2.5);
-    modelViewMatrix = lookAt(eye, at , up);
-    projectionMatrix = perspective(fovy, aspect, near, far);
-
-    gl.uniformMatrix4fv( modelViewMatrixLoc, false, flatten(modelViewMatrix) );
-    gl.uniformMatrix4fv( projectionMatrixLoc, false, flatten(projectionMatrix) );
-	
+		
 	gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 	gl.disable(gl.DEPTH_TEST);
 	gl.enable(gl.BLEND);
+	//gl.enable(gl.DEPTH_TEST);
+	
 	
 	points = [];
-	setDisplay();
+	texCoordsArray = [];
+	setDisplay2();
 	configureTexture(roadTex);
 	bufferObjects();
 	gl.drawArrays( gl.TRIANGLES, 0, points.length );
-
 	
 	points = [];
-	setDisplay2();
+	texCoordsArray = [];
+	setDisplay();
 	configureTexture(carTex);
 	bufferObjects();
 	gl.drawArrays( gl.TRIANGLES, 0, points.length );
 	
-
 
 	
 	window.requestAnimFrame(render);
