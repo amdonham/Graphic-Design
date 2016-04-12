@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<title>CS435 Project 7 Alan Donham</title>
+<head>
+	<meta content = "text/html;charset=utf-8" http-equiv="Content-Type">
+	<meta content = "utf-8" http-equiv = "encoding">
+</head>
+
+<script id="vertex-shader" type="x-shader/x-vertex">
+
+attribute vec4 vPosition;
+attribute vec4 vNormal;
+
+varying vec4 fColor;
+attribute  vec4 vColor;
+attribute  vec2 vTexCoord;
+varying vec2 fTexCoord;
+
+uniform vec4 ambientProduct, diffuseProduct, specularProduct;
+uniform mat4 modelViewMatrix;
+uniform mat4 projectionMatrix;
+uniform vec4 lightPosition;
+uniform float shininess;
+uniform vec3 eyePosition;
+varying float s, t;
+
+
+void
+main()
+{
+
+    float pi = acos(0.0);
+
+    t= 0.5*acos(vPosition.x)/pi;
+
+    s = 0.5*asin(vPosition.y/sqrt(1.0-vPosition.x*vPosition.x))/pi;
+	
+    vec3 L;
+    if(lightPosition.w == 0.0)  L = normalize( lightPosition.xyz);
+    else  L = normalize( (lightPosition - vPosition) .xyz);
+
+	
+    vec3 E = normalize( eyePosition);
+    
+    vec3 H = normalize( L + E );
+
+    
+    // Transform vertex normal into eye coordinates
+    
+    vec3 N = normalize(vNormal.xyz);
+
+    // Compute terms in the illumination equation
+    vec4 ambient = ambientProduct;
+
+    float Kd = max( dot(L, N), 0.0 );
+    vec4  diffuse = Kd*diffuseProduct;
+
+    float Ks = pow( max(dot(N, H), 0.0), shininess );
+    vec4  specular = Ks * specularProduct;
+    
+    if( dot(L, N) < 0.0 ) {
+	specular = vec4(0.0, 0.0, 0.0, 1.0);
+    } 
+
+    gl_Position = projectionMatrix * modelViewMatrix * vPosition;
+    
+    fColor = ambient  + specular + diffuse + vColor;
+	fTexCoord = vTexCoord;
+
+    fColor.a = 1.0;
+}
+</script>
+
+<script id="fragment-shader" type="x-shader/x-fragment">
+
+precision mediump float;
+uniform sampler2D texture;
+varying float s, t;
+varying vec4 fColor;
+varying  vec2 fTexCoord;
+
+void
+main()
+{
+	gl_FragColor = texture2D( texture, vec2(s, t))*fColor;
+    //gl_FragColor = fColor;
+
+}
+</script>
+
+
+
+
+<p></p>
+
+<script type="text/javascript" src="../Common/webgl-utils.js"></script>
+<script type="text/javascript" src="../Common/initShaders.js"></script>
+
+<script type="text/javascript" src="../Common/MV.js"></script>
+<script type="text/javascript" src="proj7.js"></script>
+
+<body>
+<canvas id="gl-canvas" width="512" height="512">
+Oops ... your browser doesn't support the HTML5 canvas element
+</canvas>
+</body>
+<img id = "earth" src = "earth.jpg"  hidden></img>
+<img id = "stars" src = "stars.jpg"  hidden></img>
+</html>
